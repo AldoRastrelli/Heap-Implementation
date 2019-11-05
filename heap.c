@@ -11,6 +11,28 @@ struct heap{
 };
 
 /***************************
+* Funciones auxiliares
+****************************/
+
+void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
+    if ((pos_elem) == 0) return;
+    size_t pos_padre = (pos_elem-1)/2;
+    if (cmp(vector[pos_elem],vector[pos_padre]) > 0){
+        swap(vector,pos_padre,pos_elem);
+        upheap(vector,pos_padre,cmp);
+    }
+}
+
+void** copiar_arreglo(void** original,size_t n){
+    void** copia = malloc(sizeof(void*)*n);
+    if (!copia) return NULL;
+    for (size_t i = 0; i < n; i++){
+        copia[i] = original[i];
+    }
+    return copia;
+}
+
+/***************************
 * Primitivas del heap
 ****************************/
 
@@ -22,15 +44,6 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
     }
     free(heap->datos);
     free(heap);
-}
-
-void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
-    if ((pos_elem) == 0) return;
-    int pos_padre = (pos_elem-1)/2;
-    if (cmp(vector[pos_elem],vector[pos_padre]) > 0){
-        swap(vector,pos_padre,pos_elem);
-        upheap(vector,pos_padre,cmp);
-    }
 }
 
 bool heap_encolar(heap_t *heap, void *elem){
@@ -48,4 +61,26 @@ bool heap_encolar(heap_t *heap, void *elem){
 void *heap_ver_max(const heap_t *heap){
     if (heap_esta_vacio(heap)) return NULL;
     return heap->datos[0];
+}
+
+
+heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
+    heap_t* heap = malloc(sizeof(heap));
+    if (!heap) return NULL;
+    
+    void** datos = copiar_arreglo(arreglo,n);
+    if (!datos){
+        free(heap);
+        return NULL;
+    }
+
+    for (size_t i = n-1; i >= 0; i--){
+        downheap(datos,n,i,cmp);
+    }
+
+    heap->datos = datos;
+    heap->cant = n;
+    heap->tam = n;
+    heap->cmp = cmp;
+    return heap;
 }
