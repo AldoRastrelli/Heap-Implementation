@@ -21,3 +21,8 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
     free(heap->datos);
     free(heap);
 }
+
+void *heap_ver_max(const heap_t *heap){
+    if (heap_esta_vacio(heap)) return NULL;
+    return heap->datos[0];
+}
