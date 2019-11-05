@@ -14,6 +14,12 @@ struct heap{
 * Funciones auxiliares
 ****************************/
 
+void swap(void** vector, size_t a, size_t b){
+    void* aux = vector[a];
+    vector[a] = vector[b];
+    vector[b] = aux;
+}
+
 void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     if ((pos_elem) == 0) return;
     size_t pos_padre = (pos_elem-1)/2;
@@ -62,7 +68,6 @@ void *heap_ver_max(const heap_t *heap){
     if (heap_esta_vacio(heap)) return NULL;
     return heap->datos[0];
 }
-
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
     heap_t* heap = malloc(sizeof(heap));
