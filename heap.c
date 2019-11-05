@@ -14,6 +14,15 @@ struct heap{
 * Funciones auxiliares
 ****************************/
 
+bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
+    size_t nuevo_tam = operacion(heap);
+    void** n_datos = realloc(heap->datos,nuevo_tam);
+    if (!n_datos) return false;
+    heap->datos = n_datos;
+    heap->tam = nuevo_tam;
+    return true;
+}
+
 void swap(void** vector, size_t a, size_t b){
     void* aux = vector[a];
     vector[a] = vector[b];
