@@ -1,5 +1,7 @@
+#define _POSIX_C_SOURCE 200809L 
 #include "heap.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #define CAPACIDAD_INICIAL 20
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
@@ -15,14 +17,18 @@ struct heap{
 * Funciones auxiliares
 ****************************/
 
+/* Devuelve la nueva capacidad del heap, disminuida */
 size_t disminuir_capacidad(heap_t* heap){
     return heap->tam / FACTOR_REDIMENSION;
 }
 
+/* Devuelve la nueva capacidad del heap, aumentada */
 size_t aumentar_capacidad(heap_t* heap){
     return heap->tam * FACTOR_REDIMENSION;
 }
 
+/* Redimensiona la capacidad del heap según la operación recibida
+(aumentar_capacidad o disminuir_capacidad) */
 bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
     size_t nuevo_tam = operacion(heap);
     void** n_datos = realloc(heap->datos,nuevo_tam);
@@ -32,6 +38,8 @@ bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
     return true;
 }
 
+/* Intercambia los datos de la posición a y b del arreglo "vector".
+Post: El arreglo se encuentra modificado */
 void swap(void** vector, size_t a, size_t b){
     void* aux = vector[a];
     vector[a] = vector[b];
