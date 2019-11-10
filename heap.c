@@ -1,18 +1,27 @@
 #include "heap.h"
 #include <stdlib.h>
 #define CAPACIDAD_INICIAL 20
-#define CTE_INCREMENTO 2
+#define FACTOR_REDIMENSION 2
+#define PROPORCION_CANT_CAP 4
 
 struct heap{
     void** datos;
     size_t cant;
-    size_t tam;
+    size_t tam; // capacidad
     cmp_func_t cmp;
 };
 
 /***************************
 * Funciones auxiliares
 ****************************/
+
+size_t disminuir_capacidad(heap_t* heap){
+    return heap->tam / FACTOR_REDIMENSION;
+}
+
+size_t aumentar_capacidad(heap_t* heap){
+    return heap->tam * FACTOR_REDIMENSION;
+}
 
 bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
     size_t nuevo_tam = operacion(heap);
@@ -98,3 +107,70 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
     heap->cmp = cmp;
     return heap;
 }
+
+void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
+    heap_t* heap = heap_crear_arr(elementos,cant,cmp);
+    if (!heap)  return;
+
+    void** arr = heap->datos;
+    size_t pos_final = heap->cant -1;
+    
+    for (size_t i = 0; i < pos_final - i; i++){
+        swap(arr, i, pos_final - i);
+        downheap(arr,heap->cant,0,heap->cmp);
+    }
+
+    arr = copiar_arreglo(arr,heap->cant);
+    heap_destruir(heap);
+
+    if (!arr)    return;
+
+    for (size_t i = 0 ; i < cant; i++){
+        elementos[i] = arr[i];
+    }
+
+    return elementos;
+}
+
+
+void *heap_desencolar(heap_t *heap){
+    void** arr = heap->datos;
+    size_t pos_final = heap->cant -1;
+    swap(arr,0,pos_final);
+    
+    void* desencolado = arr[pos_final];
+    arr[pos_final] = NULL;
+
+    if (PROPORCION_CANT_CAP * heap->cant <= heap->tam){
+        if (!heap_redimensionar(heap,disminuir_capacidad)) return false;
+    }
+    heap->cant--;
+    downheap(arr, heap->cant, 0, heap->cmp);
+    return true;
+}
+
+heap_t *heap_crear(cmp_func_t cmp){
+    heap_t* heap = malloc(sizeof(heap));
+    if (!heap) return NULL;
+    
+    void** datos = malloc(sizeof(void*) * CAPACIDAD_INICIAL);
+    if (!datos){
+        free(heap);
+        return NULL;
+    }
+
+    heap->datos = datos;
+    heap->cant = 0;
+    heap->tam = CAPACIDAD_INICIAL;
+    heap->cmp = cmp;
+    return heap;
+}
+
+size_t heap_cantidad(const heap_t *heap){
+    return heap->cant;
+}
+
+bool heap_esta_vacio(const heap_t *heap){
+    return heap->cant == 0;
+}
+
