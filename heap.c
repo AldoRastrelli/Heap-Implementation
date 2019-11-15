@@ -55,6 +55,21 @@ void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     }
 }
 
+void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
+	if (pos >= tam) return;
+	size_t max = pos;
+	size_t izq = 2 * pos + 1;
+	size_t der = 2 * pos + 2;
+    
+	if (izq < tam && cmp(vector[izq], vector[max]) > 0)     max = izq;
+	if (der < tam && cmp(vector[der], vector[max]) > 0)     max = der;
+    
+	if (max != pos){
+		swap(vector,pos,max);
+		downheap(A,   tam,   max,   cmp);
+    }
+}
+
 void** copiar_arreglo(void** original,size_t n){
     void** copia = malloc(sizeof(void*)*n);
     if (!copia) return NULL;
