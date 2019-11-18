@@ -1,7 +1,7 @@
-#define _POSIX_C_SOURCE 200809L 
 #include "heap.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#define _POSIX_C_SOURCE 200809L 
 #define CAPACIDAD_INICIAL 20
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
@@ -70,6 +70,12 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
     }
 }
 
+void heapify(void** vector, size_t n, cmp_func_t cmp){
+    for (size_t i = n-1; i >= 0; i--){
+        downheap(vector,n,i,cmp);
+    }
+}
+
 void** copiar_arreglo(void** original,size_t n){
     void** copia = malloc(sizeof(void*)*n);
     if (!copia) return NULL;
@@ -119,11 +125,7 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
         free(heap);
         return NULL;
     }
-
-    for (size_t i = n-1; i >= 0; i--){
-        downheap(datos,n,i,cmp);
-    }
-
+    heapify(datos,n,cmp);
     heap->datos = datos;
     heap->cant = n;
     heap->tam = n;
@@ -154,7 +156,6 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
 
     return elementos;
 }
-
 
 void *heap_desencolar(heap_t *heap){
     void** arr = heap->datos;
@@ -196,4 +197,3 @@ size_t heap_cantidad(const heap_t *heap){
 bool heap_esta_vacio(const heap_t *heap){
     return heap->cant == 0;
 }
-
