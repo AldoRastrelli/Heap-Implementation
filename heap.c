@@ -66,7 +66,7 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
     
 	if (max != pos){
 		swap(vector,pos,max);
-		downheap(A,   tam,   max,   cmp);
+		downheap(vector,   tam,   max,   cmp);
     }
 }
 
@@ -90,11 +90,15 @@ void** copiar_arreglo(void** original,size_t n){
 ****************************/
 
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
-    if (destruir_elemento){
+    if (!destruir_elemento){
+        destruir_elemento = free;
+    }
+    if (!heap_esta_vacio(heap)){
         for (int i = 0; i < heap->cant; i++){
-            destruir_elemento(heap->datos[i]);
+            destruir_elemento((heap->datos)[i]);
         }
     }
+    
     free(heap->datos);
     free(heap);
 }
@@ -134,27 +138,14 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
 }
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
-    heap_t* heap = heap_crear_arr(elementos,cant,cmp);
-    if (!heap)  return;
+    heapify(elementos,cant,cmp);
 
-    void** arr = heap->datos;
-    size_t pos_final = heap->cant -1;
+    size_t pos_final = cant -1;
     
     for (size_t i = 0; i < pos_final - i; i++){
-        swap(arr, i, pos_final - i);
-        downheap(arr,heap->cant,0,heap->cmp);
+        swap(elementos, i, pos_final - i);
+        downheap(elementos,cant,0,cmp);
     }
-
-    arr = copiar_arreglo(arr,heap->cant);
-    heap_destruir(heap);
-
-    if (!arr)    return;
-
-    for (size_t i = 0 ; i < cant; i++){
-        elementos[i] = arr[i];
-    }
-
-    return elementos;
 }
 
 void *heap_desencolar(heap_t *heap){
@@ -170,7 +161,7 @@ void *heap_desencolar(heap_t *heap){
     }
     heap->cant--;
     downheap(arr, heap->cant, 0, heap->cmp);
-    return true;
+    return desencolado;
 }
 
 heap_t *heap_crear(cmp_func_t cmp){
