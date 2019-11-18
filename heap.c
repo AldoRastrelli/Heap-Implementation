@@ -1,6 +1,7 @@
 #include "heap.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #define _POSIX_C_SOURCE 200809L 
 #define CAPACIDAD_INICIAL 20
 #define FACTOR_REDIMENSION 2
@@ -50,6 +51,7 @@ void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     if ((pos_elem) == 0) return;
     size_t pos_padre = (pos_elem-1)/2;
     if (cmp(vector[pos_elem],vector[pos_padre]) > 0){
+        printf("el elemento nuevo es mayor al padre\n");
         swap(vector,pos_padre,pos_elem);
         upheap(vector,pos_padre,cmp);
     }
@@ -90,15 +92,12 @@ void** copiar_arreglo(void** original,size_t n){
 ****************************/
 
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
-    if (!destruir_elemento){
-        destruir_elemento = free;
-    }
-    if (!heap_esta_vacio(heap)){
+    if (destruir_elemento && !heap_esta_vacio(heap)){
         for (int i = 0; i < heap->cant; i++){
             destruir_elemento((heap->datos)[i]);
         }
     }
-    
+
     free(heap->datos);
     free(heap);
 }
@@ -106,17 +105,20 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
 bool heap_encolar(heap_t *heap, void *elem){
     if (!elem) return false;
     if (heap->cant == heap->tam){
+        printf("redimensiona\n");
         if (!heap_redimensionar(heap,aumentar_capacidad)) return false;
     }
     void** datos = heap->datos;
-    datos[heap->cant] = elem;
+    datos[heap->cant] = elem; 
     upheap(datos,heap->cant,heap->cmp);
     heap->cant++;
     return true;
 }
 
 void *heap_ver_max(const heap_t *heap){
-    if (heap_esta_vacio(heap)) return NULL;
+    if (heap_esta_vacio(heap)){
+        return NULL;
+    }
     return heap->datos[0];
 }
 
@@ -149,6 +151,8 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
 }
 
 void *heap_desencolar(heap_t *heap){
+    if (heap_esta_vacio(heap))  return NULL;
+    
     void** arr = heap->datos;
     size_t pos_final = heap->cant -1;
     swap(arr,0,pos_final);
@@ -156,7 +160,7 @@ void *heap_desencolar(heap_t *heap){
     void* desencolado = arr[pos_final];
     arr[pos_final] = NULL;
 
-    if (PROPORCION_CANT_CAP * heap->cant <= heap->tam){
+    if (PROPORCION_CANT_CAP * heap->cant <= heap->tam && heap->cant != 0){
         if (!heap_redimensionar(heap,disminuir_capacidad)) return false;
     }
     heap->cant--;
@@ -165,11 +169,12 @@ void *heap_desencolar(heap_t *heap){
 }
 
 heap_t *heap_crear(cmp_func_t cmp){
-    heap_t* heap = malloc(sizeof(heap));
+    heap_t* heap = malloc(sizeof(heap_t));
     if (!heap) return NULL;
     
     void** datos = malloc(sizeof(void*) * CAPACIDAD_INICIAL);
     if (!datos){
+        printf("not datos\n");
         free(heap);
         return NULL;
     }
@@ -186,5 +191,6 @@ size_t heap_cantidad(const heap_t *heap){
 }
 
 bool heap_esta_vacio(const heap_t *heap){
-    return heap->cant == 0;
+    size_t elems = heap->cant;
+    return  elems == 0;
 }
