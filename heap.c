@@ -75,7 +75,7 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
 }
 
 void heapify(void** vector, size_t n, cmp_func_t cmp){
-    for (size_t i = n-1; i >= 0; i--){
+    for (long i = n-1; i >= 0; i--){
         downheap(vector,n,i,cmp);
     }
 }
@@ -140,12 +140,12 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
     heapify(elementos,cant,cmp);
+    size_t pos_final = cant - 1;
 
-    size_t pos_final = cant -1;
-    
-    for (size_t i = 0; i < pos_final - i; i++){
-        swap(elementos, i, pos_final - i);
-        downheap(elementos,cant,0,cmp);
+    for (size_t i = 0; i < cant; i++){
+        swap(elementos, 0, pos_final);
+        downheap(elementos,pos_final,0,cmp);
+        pos_final--;
     }
 }
 

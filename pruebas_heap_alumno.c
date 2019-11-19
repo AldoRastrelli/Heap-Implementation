@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 /*
 gcc -g -std=c99 -Wall -Wconversion -Wno-sign-conversion -Werror -o pruebas *.c
@@ -161,11 +162,39 @@ static void pruebas_heap_volumen(){
     heap_destruir(heap,NULL);
 }
 
+static void pruebas_heapsort(){
+    printf("\n**PRUEBAS HEAPSORT**\n");
+
+    void* vector[TAM];
+
+    for (int i = 0; i < TAM; i++){
+        int* p = malloc(sizeof(int*));
+        *p = rand()%TAM;
+        vector[i] = p;
+    }
+
+    heap_sort(vector,TAM,intcmp);
+    int actual = *(int*)vector[0];
+    bool ok = true;
+
+    for (int j = 1; j < TAM; j++){
+        int a = *(int*)vector[j];
+        if (a < actual) ok = false;
+        actual = *(int*)vector[j];
+    }
+
+    print_test("Prueba heapsort ordena un arreglo", ok);
+
+    destruir_vector((int**)vector,TAM);    
+}
+
 void pruebas_heap_alumno(){
+    srand((unsigned int)time(NULL));
 	pruebas_heap_vacio();
 	prueba_heap_encolar();
 	//prueba_heap_desencolar();
     pruebas_heap_volumen();
+    pruebas_heapsort();
 
 }
 
