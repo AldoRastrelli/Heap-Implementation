@@ -50,7 +50,9 @@ void swap(void** vector, size_t a, size_t b){
 void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     if ((pos_elem) == 0) return;
     size_t pos_padre = (pos_elem-1)/2;
-    if (cmp(vector[pos_elem],vector[pos_padre]) > 0){
+    void* elem = vector[pos_elem];
+    void* padre = vector[pos_padre];
+    if (cmp(elem,padre) > 0){
         printf("el elemento nuevo es mayor al padre\n");
         swap(vector,pos_padre,pos_elem);
         upheap(vector,pos_padre,cmp);
@@ -109,7 +111,7 @@ bool heap_encolar(heap_t *heap, void *elem){
         if (!heap_redimensionar(heap,aumentar_capacidad)) return false;
     }
     void** datos = heap->datos;
-    datos[heap->cant] = elem; 
+    datos[heap->cant] = elem;
     upheap(datos,heap->cant,heap->cmp);
     heap->cant++;
     return true;
@@ -177,6 +179,10 @@ heap_t *heap_crear(cmp_func_t cmp){
         printf("not datos\n");
         free(heap);
         return NULL;
+    }
+
+    for (size_t i = 0; i < CAPACIDAD_INICIAL; i++){
+        datos[i] = NULL;
     }
 
     heap->datos = datos;

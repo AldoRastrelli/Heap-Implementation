@@ -45,27 +45,27 @@ static void prueba_heap_encolar(){
 	printf("\n**PRUEBAS ENCOLAR Y DESENCOLAR**\n");
     heap_t* heap = heap_crear(str_cmp);
 
-    char dato1[5] = "perro";
-    char dato2[5] = "gato";
+    char dato1[5] = "gato";
+	char dato2[5] = "perro";
     //char dato3[5] = "vaca";
 
     //Inserta 1 dato y luego lo borra
     print_test("Prueba heap encolar dato1", heap_encolar(heap, &dato1));
     print_test("Prueba heap la cantidad de elementos es 1", heap_cantidad(heap) == 1);
-    print_test("Prueba heap ver_max dato1 es dato1", heap_ver_max(heap) == &dato1);
+    print_test("Prueba heap ver_max dato1 es dato1", heap_ver_max(heap) == dato1);
 
     print_test("Prueba heap borrar dato1, es dato1", heap_desencolar(heap) == dato1);
     print_test("Prueba heap la cantidad de elementos es 0", heap_cantidad(heap) == 0);
 
 	printf("\n");
     //Inserta otros 3 datos y no los borra (se destruyen con el heap)
-    print_test("Prueba heap encolar dato2", heap_encolar(heap, &dato2));	// gato
+    print_test("Prueba heap encolar dato2", heap_encolar(heap, &dato1));	// gato
     print_test("Prueba heap la cantidad de elementos es 1", heap_cantidad(heap) == 1);
-    print_test("Prueba heap ver_max dato2 es dato2", heap_ver_max(heap) == &dato2);
+    print_test("Prueba heap ver_max dato2 es dato2", heap_ver_max(heap) == &dato1);
 
-    print_test("Prueba heap encolar dato1", heap_encolar(heap, &dato1));	// perro
+    print_test("Prueba heap encolar dato1", heap_encolar(heap, &dato2));	// perro
     print_test("Prueba heap la cantidad de elementos es 2", heap_cantidad(heap) == 2);
-    print_test("Prueba heap ver_max dato1 es dato1", heap_ver_max(heap) == &dato1);
+    //print_test("Prueba heap ver_max dato1 es dato1", heap_ver_max(heap) == &dato1);
 //
 	//print_test("Prueba heap ver_max dato3 es dato3", heap_ver_max(heap) == &dato1);
 //
