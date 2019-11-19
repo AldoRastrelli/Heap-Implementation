@@ -1,6 +1,9 @@
 #ifndef _HEAP_H
 #define _HEAP_H
 
+#define VOLUMEN 20
+#define TAM 10
+
 #include "heap.h"
 #include "testing.h"
 #include <stddef.h>
@@ -24,11 +27,23 @@ int str_cmp(const void* a, const void* b){
 	return strcmp(str_a, str_b);
 }
 
+int intcmp(const void* a, const void* b){
+    if (*(int*)a > *(int*)b) return 1;
+    else if (*(int*)a < *(int*)b) return -1;
+    return 0;
+}
+
+void destruir_vector(int** vector, size_t n){
+    for (size_t i = 0; i < n; i++){
+        free(vector[i]);
+    }
+}
+
 /***************************
  * Funciones de Pruebas
  * *************************/
 
-void pruebas_heap_vacio(){
+static void pruebas_heap_vacio(){
 	printf("\n**PRUEBAS HEAP VACÍO**\n");
 	heap_t* heap = heap_crear(str_cmp);
 
@@ -40,7 +55,6 @@ void pruebas_heap_vacio(){
 	heap_destruir(heap,NULL);
 }
 
-
 static void prueba_heap_encolar(){
 	printf("\n**PRUEBAS ENCOLAR Y DESENCOLAR**\n");
     heap_t* heap = heap_crear(str_cmp);
@@ -48,6 +62,8 @@ static void prueba_heap_encolar(){
     char dato1[5] = "gato";
 	char dato2[5] = "perro";
     //char dato3[5] = "vaca";
+
+    print_test("Prueba heap no se puede encolar NULL", !heap_encolar(heap, NULL));
 
     //Inserta 1 dato y luego lo borra
     print_test("Prueba heap encolar dato1", heap_encolar(heap, &dato1));
@@ -116,10 +132,39 @@ static void prueba_heap_desencolar(){
     heap_destruir(heap, NULL);
 } */
 
+static void pruebas_heap_volumen(){
+    heap_t* heap = heap_crear(intcmp);
+    int* vector[VOLUMEN];
+    bool ok = true;
+
+    for (int i = VOLUMEN-1; i >= 0 && ok; i--){
+        int* p = malloc(sizeof(int*));
+        *p = i/2;
+        vector[i] = p;
+        ok = heap_encolar(heap,p);
+    }
+
+    print_test("Prueba heap encolar muchos elementos", ok);
+    print_test("Prueba heap la cantidad de elementos es correcta", heap_cantidad(heap) == VOLUMEN);
+
+    for (int j = VOLUMEN-1; j >= 0 && ok; j--){
+        int* q = heap_desencolar(heap);
+        ok = (intcmp(q,vector[j]) == 0);
+    }
+
+    print_test("Prueba heap desencolar muchos elementos", ok);
+    print_test("Prueba heap la cantidad de elementos es 0", heap_cantidad(heap) == 0);
+
+    destruir_vector(vector,VOLUMEN);
+    heap_destruir(heap,NULL);
+}
+
 void pruebas_heap_alumno(){
 	pruebas_heap_vacio();
 	prueba_heap_encolar();
 	//prueba_heap_desencolar();
+    pruebas_heap_volumen();
+
 }
 
 #endif

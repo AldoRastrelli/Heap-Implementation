@@ -32,7 +32,7 @@ size_t aumentar_capacidad(heap_t* heap){
 (aumentar_capacidad o disminuir_capacidad) */
 bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
     size_t nuevo_tam = operacion(heap);
-    void** n_datos = realloc(heap->datos,nuevo_tam);
+    void** n_datos = realloc(heap->datos,sizeof(void*)*nuevo_tam);
     if (!n_datos) return false;
     heap->datos = n_datos;
     heap->tam = nuevo_tam;
@@ -125,7 +125,7 @@ void *heap_ver_max(const heap_t *heap){
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
-    heap_t* heap = malloc(sizeof(heap));
+    heap_t* heap = malloc(sizeof(heap_t));
     if (!heap) return NULL;
     
     void** datos = copiar_arreglo(arreglo,n);
