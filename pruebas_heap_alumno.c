@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 /*
 gcc -g -std=c99 -Wall -Wconversion -Wno-sign-conversion -Werror -o pruebas *.c
@@ -133,6 +134,7 @@ static void prueba_heap_desencolar(){
 } */
 
 static void pruebas_heap_volumen(){
+	printf("\n**PRUEBAS VOLUMEN**\n");
     heap_t* heap = heap_crear(intcmp);
     int* vector[VOLUMEN];
     bool ok = true;

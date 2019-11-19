@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define _POSIX_C_SOURCE 200809L 
-#define CAPACIDAD_INICIAL 20
+#define CAPACIDAD_INICIAL 5
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
 
@@ -94,12 +94,11 @@ void** copiar_arreglo(void** original,size_t n){
 ****************************/
 
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
-    if (destruir_elemento && !heap_esta_vacio(heap)){
+    if (destruir_elemento){
         for (int i = 0; i < heap->cant; i++){
             destruir_elemento((heap->datos)[i]);
         }
     }
-
     free(heap->datos);
     free(heap);
 }
@@ -118,9 +117,7 @@ bool heap_encolar(heap_t *heap, void *elem){
 }
 
 void *heap_ver_max(const heap_t *heap){
-    if (heap_esta_vacio(heap)){
-        return NULL;
-    }
+    if (heap_esta_vacio(heap)) return NULL;
     return heap->datos[0];
 }
 
@@ -162,7 +159,7 @@ void *heap_desencolar(heap_t *heap){
     void* desencolado = arr[pos_final];
     arr[pos_final] = NULL;
 
-    if (PROPORCION_CANT_CAP * heap->cant <= heap->tam && heap->cant != 0){
+    if (heap->tam > CAPACIDAD_INICIAL && PROPORCION_CANT_CAP * heap->cant <= heap->tam){
         if (!heap_redimensionar(heap,disminuir_capacidad)) return false;
     }
     heap->cant--;
