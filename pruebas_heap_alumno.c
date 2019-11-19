@@ -35,10 +35,11 @@ int intcmp(const void* a, const void* b){
     return 0;
 }
 
-void destruir_vector(int** vector, size_t n){
+void destruir_vector(void** vector, size_t n){
     for (size_t i = 0; i < n; i++){
         free(vector[i]);
     }
+    //free(vector);
 }
 
 /***************************
@@ -137,7 +138,7 @@ static void prueba_heap_desencolar(){
 static void pruebas_heap_volumen(){
 	printf("\n**PRUEBAS VOLUMEN**\n");
     heap_t* heap = heap_crear(intcmp);
-    int* vector[VOLUMEN];
+    void** vector = malloc(sizeof(void*)*VOLUMEN);
     bool ok = true;
 
     for (int i = VOLUMEN-1; i >= 0 && ok; i--){
@@ -158,14 +159,15 @@ static void pruebas_heap_volumen(){
     print_test("Prueba heap desencolar muchos elementos", ok);
     print_test("Prueba heap la cantidad de elementos es 0", heap_cantidad(heap) == 0);
 
-    destruir_vector(vector,VOLUMEN);
     heap_destruir(heap,NULL);
+    destruir_vector(vector,VOLUMEN);
+    free(vector);
 }
 
 static void pruebas_heapsort(){
     printf("\n**PRUEBAS HEAPSORT**\n");
 
-    void* vector[TAM];
+    void** vector = malloc(sizeof(void*)*TAM);
 
     for (int i = 0; i < TAM; i++){
         int* p = malloc(sizeof(int*));
@@ -185,7 +187,43 @@ static void pruebas_heapsort(){
 
     print_test("Prueba heapsort ordena un arreglo", ok);
 
-    destruir_vector((int**)vector,TAM);    
+    destruir_vector(vector,TAM);  
+    free(vector);  
+}
+
+static void pruebas_heap_arreglo(){
+    printf("\n**PRUEBAS HEAP ARREGLO**\n");
+
+    void** vector = malloc(sizeof(void*)*TAM);
+
+    for (int i = 0; i < TAM; i++){
+        int* p = malloc(sizeof(int*));
+        *p = rand()%TAM;
+        vector[i] = p;
+    }
+
+    heap_t* heap_a = heap_crear_arr(vector,TAM,intcmp);
+
+    print_test("Prueba heap creado con un arreglo, tiene el tamaño correcto", heap_cantidad(heap_a) == TAM);
+    
+    heap_t* heap_b = heap_crear(intcmp);
+    
+    for (int i = 0; i < TAM; i++){
+        heap_encolar(heap_b,vector[i]);
+    }
+
+    bool ok = true;
+
+    while (!(heap_esta_vacio(heap_a) || heap_esta_vacio(heap_b))){
+        ok = heap_desencolar(heap_a) == heap_desencolar(heap_b);
+    }
+
+    print_test("Prueba heap creado con un arreglo, se comporta como un heap", ok);
+
+    heap_destruir(heap_a,NULL);
+    heap_destruir(heap_b,NULL);
+    destruir_vector(vector,TAM);
+    free(vector);
 }
 
 void pruebas_heap_alumno(){
@@ -195,7 +233,7 @@ void pruebas_heap_alumno(){
 	//prueba_heap_desencolar();
     pruebas_heap_volumen();
     pruebas_heapsort();
-
+    pruebas_heap_arreglo();
 }
 
 #endif

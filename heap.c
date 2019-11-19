@@ -53,7 +53,6 @@ void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     void* elem = vector[pos_elem];
     void* padre = vector[pos_padre];
     if (cmp(elem,padre) > 0){
-        printf("el elemento nuevo es mayor al padre\n");
         swap(vector,pos_padre,pos_elem);
         upheap(vector,pos_padre,cmp);
     }
