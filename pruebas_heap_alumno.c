@@ -10,10 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-<<<<<<< HEAD
-=======
 #include <time.h>
->>>>>>> 93627949611a060ec09ef6af7e87fb98ece946a3
 
 /*
 gcc -g -std=c99 -Wall -Wconversion -Wno-sign-conversion -Werror -o pruebas *.c
@@ -42,7 +39,7 @@ void destruir_vector(void** vector, size_t n){
     for (size_t i = 0; i < n; i++){
         free(vector[i]);
     }
-    //free(vector);
+    free(vector);
 }
 
 /***************************
@@ -136,7 +133,6 @@ static void pruebas_heap_volumen(){
 
     heap_destruir(heap,NULL);
     destruir_vector(vector,VOLUMEN);
-    free(vector);
 }
 
 static void pruebas_heapsort(){
@@ -162,8 +158,7 @@ static void pruebas_heapsort(){
 
     print_test("Prueba heapsort ordena un arreglo", ok);
 
-    destruir_vector(vector,TAM);  
-    free(vector);  
+    destruir_vector(vector,TAM); 
 }
 
 static void pruebas_heap_arreglo(){
@@ -198,7 +193,6 @@ static void pruebas_heap_arreglo(){
     heap_destruir(heap_a,NULL);
     heap_destruir(heap_b,NULL);
     destruir_vector(vector,TAM);
-    free(vector);
 }
 
 void pruebas_heap_alumno(){
