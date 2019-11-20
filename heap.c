@@ -32,7 +32,7 @@ size_t aumentar_capacidad(heap_t* heap){
 (aumentar_capacidad o disminuir_capacidad) */
 bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
     size_t nuevo_tam = operacion(heap);
-    void** n_datos = realloc(heap->datos,sizeof(void*)*nuevo_tam);
+    void** n_datos = realloc(heap->datos, sizeof(void*) * nuevo_tam);
     if (!n_datos) return false;
     heap->datos = n_datos;
     heap->tam = nuevo_tam;
