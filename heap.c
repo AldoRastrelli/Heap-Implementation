@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define _POSIX_C_SOURCE 200809L 
-#define CAPACIDAD_INICIAL 20
+#define CAPACIDAD_INICIAL 5
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
 
@@ -53,7 +53,6 @@ void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
     void* elem = vector[pos_elem];
     void* padre = vector[pos_padre];
     if (cmp(elem,padre) > 0){
-        printf("el elemento nuevo es mayor al padre\n");
         swap(vector,pos_padre,pos_elem);
         upheap(vector,pos_padre,cmp);
     }
@@ -75,7 +74,7 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
 }
 
 void heapify(void** vector, size_t n, cmp_func_t cmp){
-    for (size_t i = n-1; i >= 0; i--){
+    for (long i = n-1; i >= 0; i--){
         downheap(vector,n,i,cmp);
     }
 }
@@ -94,12 +93,11 @@ void** copiar_arreglo(void** original,size_t n){
 ****************************/
 
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
-    if (destruir_elemento && !heap_esta_vacio(heap)){
+    if (destruir_elemento){
         for (int i = 0; i < heap->cant; i++){
             destruir_elemento((heap->datos)[i]);
         }
     }
-
     free(heap->datos);
     free(heap);
 }
@@ -118,9 +116,7 @@ bool heap_encolar(heap_t *heap, void *elem){
 }
 
 void *heap_ver_max(const heap_t *heap){
-    if (heap_esta_vacio(heap)){
-        return NULL;
-    }
+    if (heap_esta_vacio(heap)) return NULL;
     return heap->datos[0];
 }
 
@@ -143,12 +139,12 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
     heapify(elementos,cant,cmp);
+    size_t pos_final = cant - 1;
 
-    size_t pos_final = cant -1;
-    
-    for (size_t i = 0; i < pos_final - i; i++){
-        swap(elementos, i, pos_final - i);
-        downheap(elementos,cant,0,cmp);
+    for (size_t i = 0; i < cant; i++){
+        swap(elementos, 0, pos_final);
+        downheap(elementos,pos_final,0,cmp);
+        pos_final--;
     }
 }
 
@@ -162,7 +158,7 @@ void *heap_desencolar(heap_t *heap){
     void* desencolado = arr[pos_final];
     arr[pos_final] = NULL;
 
-    if (PROPORCION_CANT_CAP * heap->cant <= heap->tam && heap->cant != 0){
+    if (heap->tam > CAPACIDAD_INICIAL && PROPORCION_CANT_CAP * heap->cant <= heap->tam){
         if (!heap_redimensionar(heap,disminuir_capacidad)) return false;
     }
     heap->cant--;
