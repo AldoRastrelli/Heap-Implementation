@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define _POSIX_C_SOURCE 200809L 
-#define CAPACIDAD_INICIAL 3
+#define CAPACIDAD_INICIAL 5
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
 
@@ -42,11 +42,9 @@ bool heap_redimensionar(heap_t* heap, size_t (*operacion) (heap_t*)){
 /* Intercambia los datos de la posición a y b del arreglo "vector".
 Post: El arreglo se encuentra modificado */
 void swap(void** vector, size_t a, size_t b){
-    printf("ANTES, a: %d, b: %d\n",*(int*)vector[a],*(int*)vector[b]);
     void* aux = vector[a];
     vector[a] = vector[b];
     vector[b] = aux;
-    printf("DESPUES, a: %d, b: %d\n",*(int*)vector[a],*(int*)vector[b]);
 }
 
 void upheap(void** vector, size_t pos_elem, cmp_func_t cmp){
@@ -106,27 +104,14 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
 
 bool heap_encolar(heap_t *heap, void *elem){
     if (!elem) return false;
-    printf("elem en ENCOLAR: %d\n",*(int*)elem);
     if (heap->cant == heap->tam){
-        printf("*redimensiona*\n");
+        printf("redimensiona\n");
         if (!heap_redimensionar(heap,aumentar_capacidad)) return false;
     }
     void** datos = heap->datos;
-    printf("cantidad de elementos: %ld\n",heap->cant);
-    size_t pos_final = heap->cant;
-    datos[pos_final] = elem;
-
+    datos[heap->cant] = elem;
+    upheap(datos,heap->cant,heap->cmp);
     heap->cant++;
-    upheap(datos,pos_final,heap->cmp);
-        printf("Vector después de encolar: [ ");
-    for (int i = 0; i < heap->cant; i++){
-        int* dato = heap->datos[i];
-        printf("(%d,%d)",i,*dato);
-        printf(", ");
-    }
-    printf(" ]");
-    printf("\n");
-    
     return true;
 }
 
@@ -164,7 +149,6 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
 }
 
 void *heap_desencolar(heap_t *heap){
-
     if (heap_esta_vacio(heap))  return NULL;
     
     void** arr = heap->datos;
@@ -205,7 +189,6 @@ heap_t *heap_crear(cmp_func_t cmp){
 }
 
 size_t heap_cantidad(const heap_t *heap){
-    
     return heap->cant;
 }
 

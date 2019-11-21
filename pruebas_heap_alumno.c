@@ -4,7 +4,6 @@
 #define VOLUMEN 20
 #define TAM 10
 #define _POSIX_C_SOURCE 200809L 
-#define MAX_RAND 10
 #include "heap.h"
 #include "testing.h"
 #include <stddef.h>
@@ -12,10 +11,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <math.h>
 
 /*
-gcc -g -std=c99 -Wall -Wconversion -Wno-sign-conversion -Werror -o pruebas *.c -lm
+gcc -g -std=c99 -Wall -Wconversion -Wno-sign-conversion -Werror -o pruebas *.c
 valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas
 */
 
@@ -38,16 +36,16 @@ int intcmp(const void* a, const void* b){
 }
 
 void destruir_vector(void** vector, size_t n){
-    //for (size_t i = 0; i < n; i++){
-    //    free(vector[i]);
-    //}
+    for (size_t i = 0; i < n; i++){
+        free(vector[i]);
+    }
     free(vector);
 }
 
 /***************************
  * Funciones de Pruebas
  * *************************/
-/*
+
 static void pruebas_heap_vacio(){
 	printf("\n**PRUEBAS HEAP VACÍO**\n");
 	heap_t* heap = heap_crear(str_cmp);
@@ -108,34 +106,26 @@ static void prueba_heap_encolar_desencolar(){
 
     heap_destruir(heap,NULL);
 }
-*/
+
 static void pruebas_heap_volumen(){
 	printf("\n**PRUEBAS VOLUMEN**\n");
     heap_t* heap = heap_crear(intcmp);
-    void** vector = malloc(sizeof(void*) * VOLUMEN);
+    void** vector = malloc(sizeof(void*)*VOLUMEN);
     bool ok = true;
 
     for (int i = VOLUMEN-1; i >= 0 && ok; i--){
-        //int* p = malloc(sizeof(int));
-        int entero = rand() % MAX_RAND;
-        if (!entero)    entero++;       // si entero = 0, suma 1 para poder dividir
-        int dato = (int) pow(i/entero, entero);
-        int* p = &dato;
-        printf("dato = %d\n",dato);
-        vector[i] = &dato;
+        int* p = malloc(sizeof(int));
+        *p = i/2;
+        vector[i] = p;
         ok = heap_encolar(heap,p);
     }
 
     print_test("Prueba heap encolar muchos elementos", ok);
     print_test("Prueba heap la cantidad de elementos es correcta", heap_cantidad(heap) == VOLUMEN);
 
-    heap_sort(vector,VOLUMEN,intcmp);
-
-    for (int j = 0 ; j <VOLUMEN && ok; j++){
-        printf("ingresa\n");
+    for (int j = VOLUMEN-1; j >= 0 && ok; j--){
         int* q = heap_desencolar(heap);
-        printf("desencolado: %d, vector[j] = %d\n",*q,*(int*)vector[VOLUMEN-1-j]);
-        //ok = (intcmp(q,&vector[j]) == 0);
+        ok = (intcmp(q,vector[j]) == 0);
     }
 
     print_test("Prueba heap desencolar muchos elementos", ok);
@@ -144,14 +134,14 @@ static void pruebas_heap_volumen(){
     heap_destruir(heap,NULL);
     destruir_vector(vector,VOLUMEN);
 }
-/*
+
 static void pruebas_heapsort(){
     printf("\n**PRUEBAS HEAPSORT**\n");
 
     void** vector = malloc(sizeof(void*)*TAM);
 
     for (int i = 0; i < TAM; i++){
-        int* p = malloc(sizeof(int*));
+        int* p = malloc(sizeof(int));
         *p = rand()%TAM;
         vector[i] = p;
     }
@@ -177,7 +167,7 @@ static void pruebas_heap_arreglo(){
     void** vector = malloc(sizeof(void*)*TAM);
 
     for (int i = 0; i < TAM; i++){
-        int* p = malloc(sizeof(int*));
+        int* p = malloc(sizeof(int));
         *p = rand()%TAM;
         vector[i] = p;
     }
@@ -204,14 +194,14 @@ static void pruebas_heap_arreglo(){
     heap_destruir(heap_b,NULL);
     destruir_vector(vector,TAM);
 }
-*/
+
 void pruebas_heap_alumno(){
-    //srand((unsigned int)time(NULL));
-	//pruebas_heap_vacio();
-	//prueba_heap_encolar_desencolar();
+    srand((unsigned int)time(NULL));
+	pruebas_heap_vacio();
+	prueba_heap_encolar_desencolar();
     pruebas_heap_volumen();
-    //pruebas_heapsort();
-    //pruebas_heap_arreglo();
+    pruebas_heapsort();
+    pruebas_heap_arreglo();
 }
 
 #endif
