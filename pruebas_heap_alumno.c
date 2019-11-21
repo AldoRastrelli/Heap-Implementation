@@ -1,7 +1,8 @@
 #ifndef _HEAP_H
 #define _HEAP_H
 
-#define VOLUMEN 20
+#define VOLUMEN 1000
+#define MAX_RAND 10
 #define TAM 10
 #define _POSIX_C_SOURCE 200809L 
 #include "heap.h"

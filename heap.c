@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define _POSIX_C_SOURCE 200809L 
-#define CAPACIDAD_INICIAL 5
+#define CAPACIDAD_INICIAL 20
 #define FACTOR_REDIMENSION 2
 #define PROPORCION_CANT_CAP 4
 
@@ -105,7 +105,6 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)){
 bool heap_encolar(heap_t *heap, void *elem){
     if (!elem) return false;
     if (heap->cant == heap->tam){
-        printf("redimensiona\n");
         if (!heap_redimensionar(heap,aumentar_capacidad)) return false;
     }
     void** datos = heap->datos;
@@ -158,11 +157,11 @@ void *heap_desencolar(heap_t *heap){
     void* desencolado = arr[pos_final];
     arr[pos_final] = NULL;
 
-    if (heap->tam > CAPACIDAD_INICIAL && PROPORCION_CANT_CAP * heap->cant <= heap->tam){
-        if (!heap_redimensionar(heap,disminuir_capacidad)) return false;
-    }
     heap->cant--;
     downheap(arr, heap->cant, 0, heap->cmp);
+    if (heap->tam > CAPACIDAD_INICIAL && PROPORCION_CANT_CAP * heap->cant <= heap->tam){
+        if (!heap_redimensionar(heap,disminuir_capacidad)) return NULL;
+    }
     return desencolado;
 }
 
@@ -172,7 +171,6 @@ heap_t *heap_crear(cmp_func_t cmp){
     
     void** datos = malloc(sizeof(void*) * CAPACIDAD_INICIAL);
     if (!datos){
-        printf("not datos\n");
         free(heap);
         return NULL;
     }
