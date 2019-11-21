@@ -73,12 +73,17 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp){
     }
 }
 
+/* Recibe un arreglo de tamaño n y una funcion de comparación,
+le da al arreglo propiedad de heap
+Post: el arreglo se encuentra modificado */
 void heapify(void** vector, size_t n, cmp_func_t cmp){
     for (long i = n-1; i >= 0; i--){
         downheap(vector,n,i,cmp);
     }
 }
 
+/* Recibe un arreglo de tamaño n y devuelve otro del mismo tamaño, en memoria dinámica,
+con los mismos elementos del arreglo original */
 void** copiar_arreglo(void** original,size_t n){
     void** copia = malloc(sizeof(void*)*n);
     if (!copia) return NULL;
